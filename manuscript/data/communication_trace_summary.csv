@@ -1,0 +1,9 @@
+Domain,Metric,Label,Unit,N,Median,Q1,Q3
+CICV5G,latency_ms,Latency,ms,56080,19.0,17.0,22.0
+CICV5G,aoi_ms,Age of information,ms,56080,19.0,17.0,22.0
+CICV5G,packet_loss_indicator,Packet-loss rate,fraction,56080,0.0,0.0,0.0
+CICV5G,jitter_proxy_ms,Jitter proxy,ms,56019,3.0,1.0,6.0
+SEE-V2X,latency_ms,Latency,ms,10047,17.325,9.841,23.18
+SEE-V2X,aoi_ms,Age of information,ms,10069,17.501,9.846,23.183
+SEE-V2X,packet_loss_indicator,Packet-loss rate,fraction,56080,0.0027639087018544936,0.0027639087018544936,0.0027639087018544936
+SEE-V2X,jitter_proxy_ms,Jitter proxy,ms,1836,3.120000000000001,0.9877499999999997,7.914000000000001

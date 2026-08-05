@@ -1,0 +1,5 @@
+Model,Significant_fraction_pct,Significant_tasks,Total_tasks
+CA-DTNet,11.11111111111111,1,9
+Impaired GRU,11.11111111111111,1,9
+Persistence,22.22222222222222,2,9
+Graph GRU,55.55555555555556,5,9

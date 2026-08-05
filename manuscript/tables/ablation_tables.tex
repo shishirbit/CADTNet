@@ -1,0 +1,59 @@
+\begin{table*}[t]
+\centering
+\caption{Component ablation based on point-forecasting performance. WAPE and
+$R^2$ are averaged over the three forecast horizons and three traffic targets.
+A negative $\Delta$WAPE means that removing the component reduced point error;
+therefore, the communication and AoI components are interpreted using the
+matched-domain robustness analysis rather than point accuracy alone.}
+\label{tab:component_ablation_point}
+\setlength{\tabcolsep}{4.3pt}
+\begin{tabular}{lrrrrrr}
+\toprule
+\multirow{2}{*}{Variant} &
+\multicolumn{3}{c}{CICV5G} &
+\multicolumn{3}{c}{SEE-V2X} \\
+\cmidrule(lr){2-4}\cmidrule(lr){5-7}
+& WAPE $\downarrow$ & $\Delta$WAPE (\%) & $R^2 \uparrow$
+& WAPE $\downarrow$ & $\Delta$WAPE (\%) & $R^2 \uparrow$ \\
+\midrule
+Full CA-DTNet                    & 0.4160 &  0.00 & 0.6659 & 0.4154 &  0.00 & 0.6672 \\
+Without communication encoder    & 0.4073 & -2.10 & 0.6772 & 0.4074 & -1.92 & 0.6772 \\
+Without AoI                      & 0.4038 & -2.94 & 0.6775 & 0.4037 & -2.80 & 0.6769 \\
+Without graph attention          & 0.4230 &  1.67 & 0.6447 & 0.4224 &  1.70 & 0.6458 \\
+Without reconstruction loss      & 0.4102 & -1.39 & 0.6643 & 0.4087 & -1.61 & 0.6668 \\
+Without uncertainty loss         & 0.4126 & -0.83 & 0.6929 & 0.4113 & -0.98 & 0.6952 \\
+\bottomrule
+\end{tabular}
+\vspace{1mm}
+\parbox{0.98\textwidth}{\footnotesize AoI: age of information. Graph attention
+provides a consistent point-forecasting benefit, whereas communication and AoI
+are principally justified by domain robustness.}
+\end{table*}
+
+\begin{table*}[t]
+\centering
+\caption{Objective-specific ablation of reconstruction and uncertainty
+components. PICP is the empirical coverage of the 10--90\% interval and PINAW
+is its normalized average width.}
+\label{tab:objective_specific_ablation}
+\setlength{\tabcolsep}{5pt}
+\begin{tabular}{llrrrr}
+\toprule
+Domain & Variant & Reconstruction WAPE $\downarrow$ & Reconstruction $R^2 \uparrow$ & PICP $\uparrow$ & PINAW $\downarrow$ \\
+\midrule
+\multirow{3}{*}{CICV5G}
+& Full CA-DTNet                 & \textbf{0.0846} & \textbf{0.9858} & 0.7964 & \textbf{0.1180} \\
+& Without reconstruction loss  & 1.3181          & -0.2971         & 0.7695 & 0.1235 \\
+& Without uncertainty loss     & 0.1009          & 0.9825          & \textbf{0.8321} & 0.2212 \\
+\midrule
+\multirow{3}{*}{SEE-V2X}
+& Full CA-DTNet                 & \textbf{0.0861} & \textbf{0.9852} & 0.7951 & \textbf{0.1181} \\
+& Without reconstruction loss  & 1.3177          & -0.2976         & 0.7707 & 0.1235 \\
+& Without uncertainty loss     & 0.1015          & 0.9827          & \textbf{0.8322} & 0.2212 \\
+\bottomrule
+\end{tabular}
+\vspace{1mm}
+\parbox{0.98\textwidth}{\footnotesize Removing reconstruction supervision
+collapses state recovery. Removing uncertainty loss increases coverage only by
+producing intervals that are approximately 87\% wider in normalized terms.}
+\end{table*}

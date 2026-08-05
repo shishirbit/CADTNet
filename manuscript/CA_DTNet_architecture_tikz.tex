@@ -1,0 +1,72 @@
+% Preamble:
+% \usepackage{tikz}
+% \usetikzlibrary{arrows.meta,positioning,fit,calc}
+%
+% This file contains an editable TikZ implementation of the CA-DTNet
+% architecture. The publication-ready rendered version is supplied as
+% figures/Fig1_CA_DTNet_architecture.pdf.
+
+
+\begin{figure*}[t]
+\centering
+\begin{tikzpicture}[
+  node distance=7mm and 9mm,
+  block/.style={draw, rounded corners=2pt, align=center,
+    minimum height=13mm, text width=34mm, font=\small, inner sep=4pt},
+  smallblock/.style={draw, rounded corners=2pt, align=center,
+    minimum height=10mm, text width=29mm, font=\footnotesize, inner sep=3pt},
+  group/.style={draw, rounded corners=4pt, inner sep=7pt},
+  flow/.style={-{Latex[length=2.2mm]}, thick},
+  feedback/.style={-{Latex[length=2.0mm]}, dashed}
+]
+\node[block] (traffic) {\textbf{pNEUMA traffic trajectories}\\
+1-s trajectories\\speed, position, count, flow\\road/lane topology};
+\node[block, below=10mm of traffic] (comm) {\textbf{Vehicular communication traces}\\
+CICV5G and SEE-V2X\\latency, AoI, loss, jitter\\CBR, throughput, RSRP, SINR};
+\node[block, right=12mm of traffic] (graphprep) {\textbf{Traffic graph construction}\\
+node/road aggregation\\adjacency matrix\\1-s sliding windows};
+\node[block, right=12mm of comm] (replay) {\textbf{Trace synchronization and replay}\\
+normalization and alignment\\clean and impaired observations};
+\node[smallblock, below=7mm of replay] (protocol) {\textbf{Training protocol}\\
+combined impaired training\\clean/impaired evaluation};
+\node[smallblock, right=16mm of graphprep] (trafficenc) {\textbf{Traffic temporal encoder}\\
+GRU / temporal feature learning};
+\node[smallblock, right=16mm of replay] (commenc) {\textbf{Communication encoder}\\
+network-quality embedding};
+\node[block, below right=5mm and -7mm of trafficenc] (fusion) {\textbf{Communication-aware fusion and gating}\\
+joint traffic--communication representation};
+\node[smallblock, below left=8mm and -3mm of fusion] (gat) {\textbf{Graph-attention spatial encoder}\\
+dynamic neighborhood weighting};
+\node[smallblock, below right=8mm and -3mm of fusion] (decoder) {\textbf{Temporal forecasting decoder}\\
+5 s, 10 s, and 30 s};
+\node[smallblock, below=8mm of fusion] (loss) {\textbf{Joint optimization}\\
+$\mathcal{L}=\lambda_f\mathcal{L}_{q}+\lambda_r\mathcal{L}_{rec}$};
+\node[group, fit=(trafficenc)(commenc)(fusion)(gat)(decoder)(loss),
+label={[font=\bfseries]above:Communication-Aware Digital Twin Network (CA-DTNet)}] (core) {};
+\node[block, right=15mm of trafficenc] (recon) {\textbf{Digital-twin reconstruction head}\\
+recover clean traffic state\\$\mathcal{L}_{rec}$};
+\node[block, right=15mm of decoder] (forecast) {\textbf{Probabilistic forecasting head}\\
+median and 10--90\% quantiles\\$\mathcal{L}_{q}$};
+\node[block, below=8mm of forecast] (eval) {\textbf{Evaluation and deployment}\\
+MAE, RMSE, WAPE, $R^2$\\PICP, PINAW, reconstruction $R^2$\\robustness, latency, memory};
+\draw[flow] (traffic) -- (graphprep);
+\draw[flow] (comm) -- (replay);
+\draw[flow] (graphprep) -- (trafficenc);
+\draw[flow] (replay) -- (commenc);
+\draw[flow] (trafficenc) -- (fusion);
+\draw[flow] (commenc) -- (fusion);
+\draw[flow] (fusion) -- (gat);
+\draw[flow] (fusion) -- (decoder);
+\draw[flow] (gat) -- (decoder);
+\draw[flow] (fusion) -- (recon);
+\draw[flow] (decoder) -- (forecast);
+\draw[flow] (recon) -- (eval);
+\draw[flow] (forecast) -- (eval);
+\draw[feedback] (protocol) -- (loss);
+\draw[feedback] (loss) -- (fusion);
+\draw[feedback] (eval.south west) to[bend left=20] (loss.south east);
+\end{tikzpicture}
+\caption{System architecture of CA-DTNet for trace-driven, communication-aware
+digital-twin reconstruction and probabilistic multi-horizon traffic forecasting.}
+\label{fig:ca_dtnet_architecture}
+\end{figure*}

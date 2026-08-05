@@ -1,0 +1,20 @@
+Figure 1. System architecture of CA-DTNet. Real pNEUMA traffic trajectories and CICV5G/SEE-V2X communication traces are synchronized through a trace-driven replay pipeline. The network jointly encodes traffic and communication context, models road-network dependencies through graph attention, reconstructs the clean digital-twin state, and produces probabilistic 5-, 10-, and 30-s forecasts.
+measured communication traces, state reconstruction, and probabilistic
+multi-horizon forecasting.
+
+Figure 2. Robust normalized communication burden. Points show medians and bars
+show interquartile ranges; packet loss is represented by the empirical loss
+rate.
+
+Figure 3. Mean WAPE and standard deviation across seeds 42, 52, and 62.
+
+Figure 4. Representative 30-s node-level speed forecast under SEE-V2X with a
+10--90% prediction interval.
+
+Figure 5. Digital-twin reconstruction in standardized multi-feature state
+space.
+
+Figure 6. Fraction of the nine horizon-target tasks showing a significant CICV5G-SEE-V2X error difference under exact matched-window testing.
+
+Figure 7. Accuracy--efficiency trade-off. Marker annotations report trainable
+parameter counts.

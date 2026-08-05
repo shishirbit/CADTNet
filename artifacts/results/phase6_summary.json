@@ -1,0 +1,30 @@
+{
+  "phase": "Phase 6",
+  "purpose": "fast-publication SOTA baseline and efficiency validation",
+  "quick_run": false,
+  "seeds": [
+    42,
+    52,
+    62
+  ],
+  "models": [
+    "dcrnn",
+    "graph_wavenet",
+    "graph_gru",
+    "ca_dtnet"
+  ],
+  "training_protocol": "Each model trained on combined CICV5G and SEE-V2X impaired data",
+  "evaluation_domains": [
+    "clean",
+    "cicv5g",
+    "see_v2x"
+  ],
+  "outputs": {
+    "seed_metrics": "/content/drive/MyDrive/CA_DTNet/phase6/results/phase6_seed_metrics.csv",
+    "aggregate_metrics": "/content/drive/MyDrive/CA_DTNet/phase6/results/phase6_aggregate_metrics.csv",
+    "efficiency": "/content/drive/MyDrive/CA_DTNet/phase6/results/phase6_efficiency.csv",
+    "wilcoxon": "/content/drive/MyDrive/CA_DTNet/phase6/results/phase6_wilcoxon_tests.csv",
+    "speed_table": "/content/drive/MyDrive/CA_DTNet/phase6/results/phase6_manuscript_speed_table.csv",
+    "overall_table": "/content/drive/MyDrive/CA_DTNet/phase6/results/phase6_manuscript_overall_table.csv"
+  }
+}

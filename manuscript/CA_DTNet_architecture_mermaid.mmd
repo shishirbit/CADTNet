@@ -1,0 +1,39 @@
+flowchart LR
+    subgraph A["Real-world data sources"]
+        A1["pNEUMA traffic trajectories<br/>1-s trajectories<br/>speed • position • count • flow<br/>road/lane topology"]
+        A2["Vehicular communication traces<br/>CICV5G and SEE-V2X<br/>latency • AoI • loss • jitter<br/>CBR • throughput • RSRP • SINR"]
+    end
+    subgraph B["Trace-driven preparation"]
+        B1["Traffic graph construction<br/>node/road aggregation<br/>adjacency matrix<br/>1-s sliding windows"]
+        B2["Trace synchronization and replay<br/>normalization<br/>window alignment<br/>clean and impaired observations"]
+        B3["Training protocol<br/>combined CICV5G + SEE-V2X<br/>clean / impaired evaluation"]
+    end
+    subgraph C["Communication-Aware Digital Twin Network (CA-DTNet)"]
+        C1["Traffic temporal encoder<br/>GRU / temporal learning"]
+        C2["Communication encoder<br/>network-quality embedding"]
+        C3["Communication-aware fusion and gating"]
+        C4["Graph-attention spatial encoder"]
+        C5["Temporal forecasting decoder<br/>5 s • 10 s • 30 s"]
+        C6["Joint optimization<br/>L = λ_f L_q + λ_r L_rec"]
+    end
+    subgraph D["Digital-twin outputs and validation"]
+        D1["Digital-twin reconstruction head<br/>clean-state recovery<br/>L_rec"]
+        D2["Probabilistic forecasting head<br/>median and 10–90% quantiles<br/>L_q"]
+        D3["Evaluation and deployment<br/>MAE • RMSE • WAPE • R²<br/>PICP • PINAW • robustness<br/>latency • memory"]
+    end
+    A1 --> B1
+    A2 --> B2
+    B1 --> C1
+    B2 --> C2
+    B3 --> C6
+    C1 --> C3
+    C2 --> C3
+    C3 --> C4
+    C3 --> C5
+    C4 --> C5
+    C3 --> D1
+    C5 --> D2
+    D1 --> D3
+    D2 --> D3
+    C6 -. training objective .-> C3
+    D3 -. evaluation feedback .-> C6

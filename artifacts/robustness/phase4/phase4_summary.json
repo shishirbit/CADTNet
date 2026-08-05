@@ -1,0 +1,38 @@
+{
+  "phase": "Phase 4",
+  "type": "real-trace communication-severity robustness analysis",
+  "domains": [
+    "cicv5g",
+    "see_v2x"
+  ],
+  "models": [
+    "historical_average",
+    "persistence",
+    "impaired_gru",
+    "graph_gru",
+    "ca_dtnet"
+  ],
+  "horizons_s": [
+    5,
+    10,
+    30
+  ],
+  "targets": [
+    "speed_mean_kmh",
+    "vehicle_count",
+    "flow_proxy"
+  ],
+  "communication_metrics": [
+    "latency_mean_ms",
+    "latency_p95_ms",
+    "aoi_mean_s",
+    "aoi_p95_s",
+    "packet_loss_mean",
+    "jitter_mean_ms",
+    "channel_busy_mean_pct",
+    "throughput_mean_bps",
+    "rsrp_mean_dbm",
+    "sinr_mean_db"
+  ],
+  "bootstrap_repetitions": 1000
+}

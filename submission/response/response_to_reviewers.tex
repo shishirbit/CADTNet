@@ -1,0 +1,152 @@
+\documentclass[11pt]{article}
+\usepackage[a4paper,margin=24mm]{geometry}
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}
+\usepackage{microtype}
+\usepackage{xcolor}
+\usepackage{enumitem}
+\usepackage{booktabs}
+\usepackage{tabularx}
+\usepackage{hyperref}
+\definecolor{commentblue}{RGB}{28,78,121}
+\definecolor{responsegreen}{RGB}{30,105,64}
+\hypersetup{colorlinks=true,urlcolor=commentblue,linkcolor=commentblue}
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{6pt}
+\setlength{\emergencystretch}{2em}
+\newcommand{\reviewcomment}[1]{\par\textcolor{commentblue}{\textbf{Comment.} #1}\par}
+\newcommand{\authorresponse}[1]{\par\textcolor{responsegreen}{\textbf{Response.} #1}\par}
+\newcommand{\paperchange}[1]{\par\textbf{Change in the paper.} #1\par}
+
+\begin{document}
+
+\begin{center}
+{\Large\bfseries Response to Reviewers}\par
+\vspace{4pt}
+{\large CA-DTNet: A Trace-Driven Communication-Aware Digital Twin Network for Robust High-Resolution Traffic Forecasting under Heterogeneous V2X Conditions}
+\end{center}
+
+We thank the reviewers for their careful and constructive comments. We checked the complete 52-page submission source and made the technical, experimental, presentation, and language changes listed below. All changes are visible in the highlighted copy, and the clean copy contains the same content without colored markup.
+
+\section*{Summary of main changes}
+
+\begin{itemize}[leftmargin=18pt]
+\item Added a mathematical and procedural account of trace assignment, temporal alignment, packet-loss sampling, sample-and-hold impairment, AoI evolution, and the role of latency, jitter, load, throughput, RSRP, and SINR.
+\item Stated explicitly that the datasets do not share a physical clock or coordinate frame; the method is an index-aligned stress replay, not geographic co-registration.
+\item Reported the joint-loss weights, full training settings, selection rule, and an endpoint sensitivity analysis for the reconstruction weight.
+\item Added a parameter-normalized comparison and clarified what the component ablations do and do not demonstrate.
+\item Quantified matched-domain sensitivity and separated held-out trace-segment robustness from zero-shot generalization to an unseen radio domain.
+\item Added recent Transformer and communication-aware literature, including all three studies suggested by Reviewer 2.
+\item Rebuilt Figure 1 as a clean four-stage vector diagram and strengthened the explanations of figures and tables.
+\item Added a reproducibility statement and aligned the mathematical architecture description with the repository implementation.
+\item Corrected grammatical, typographical, table-label, and formatting inconsistencies throughout the paper.
+\end{itemize}
+
+\section*{Reviewer 1}
+
+\subsection*{Comment 1: trace replay, alignment, and impairment generation}
+
+\reviewcomment{The paper does not provide enough technical detail on temporal and spatial alignment or on how latency, loss, AoI, jitter, and other communication conditions generate impaired observations. The synchronization should avoid unrealistic or biased traffic--communication associations.}
+
+\authorresponse{We agree. The paper now distinguishes temporal index alignment from physical co-location. Traffic trajectories are aggregated into one-second bins. Each communication file is ordered by its recorded sample index. Road nodes receive communication traces by a deterministic cyclic assignment over sorted identifiers, and a contiguous starting offset is drawn with a fixed replay seed. This preserves local temporal order and the measured co-variation among communication variables while preventing selection based on future targets or model errors.}
+
+The selected communication row for node $i$ and traffic step $k$ is now defined as
+\[
+\kappa(i,k)=1+((o_i+k-2)\bmod L_{r(i)}).
+\]
+For packet-loss probability $p_{i,k}$, replay draws $R_{i,k}\sim\mathrm{Bernoulli}(1-p_{i,k})$. A successful packet supplies the current traffic state. A failed packet retains the most recently received state. AoI resets to the capped measured latency on success and increases by one traffic-bin duration on failure. Jitter, load, throughput, RSRP, SINR, and the standardized latency/loss variables are context for the learned reliability gate; they do not independently add arbitrary noise to the traffic variables.
+
+\paperchange{The subsection ``Trace-driven observation process'' now gives the algorithm, equations, fixed-seed controls, 5-s AoI cap, direct-versus-contextual variable distinction, and matched-window construction. The ``Limitations'' subsection states that the source datasets have no common clock or coordinates and discusses correlations that index replay may not reproduce. Figure 1 now shows this flow explicitly.}
+
+\subsection*{Comment 2: joint objective weights and sensitivity}
+
+\reviewcomment{The joint optimization objective does not state the selected loss weights, the tuning method, or the sensitivity of forecasting and reconstruction to those weights.}
+
+\authorresponse{The reported configuration uses $\lambda_q=1.0$ for quantile forecasting and $\lambda_r=0.3$ for clean-state reconstruction. The forecasting objective remains dominant, and the auxiliary reconstruction coefficient was fixed from validation behavior without test-set tuning. We also report the available endpoint sensitivity comparison at $\lambda_r=0$. At $\lambda_r=0.3$, reconstruction WAPE is 0.0846/0.0861 and reconstruction $R^2$ is 0.9858/0.9852 for CICV5G/SEE-V2X. At $\lambda_r=0$, reconstruction WAPE rises to 1.3181/1.3177 and $R^2$ becomes negative, while point WAPE changes from 0.4160/0.4154 to 0.4102/0.4087. Reconstruction supervision therefore produces a large state-fidelity gain with a 1.39--1.61\% point-WAPE trade-off.}
+
+\paperchange{The ``Joint training objective'' and ``Training protocol'' subsections now state both coefficients, the selection rule, and all main hyperparameters. Table ``Joint-objective coefficients and selection rule'' and the component-ablation discussion report the endpoint sensitivity. The limitations clearly state that this is an endpoint analysis rather than a dense coefficient sweep.}
+
+\subsection*{Comment 3: controlled comparison and model complexity}
+
+\reviewcomment{The comparison should isolate communication awareness from added model complexity and supervision by using parameter-matched or complexity-normalized baselines and clearer component contributions.}
+
+\authorresponse{We added a complexity-normalized comparison under the same windows, targets, splits, seeds, optimizer settings, and hardware. CA-DTNet has 71,203 parameters. DCRNN has 124,233 (1.75$\times$), Graph WaveNet has 98,541 (1.38$\times$), and Graph GRU has 34,377 (0.48$\times$). CA-DTNet has the lowest overall WAPE (0.4116), although it is neither the largest nor the smallest model. The two larger baselines and the smaller/faster Graph GRU provide controls on both sides of the capacity range.}
+
+We also clarified the role of each ablation. Graph attention improves point WAPE. Reconstruction supervision is essential for state recovery but slightly worsens point WAPE. Uncertainty training reduces interval width. Removing communication encoding or AoI slightly improves point WAPE in this experiment, so we do not claim that those inputs universally improve point error. Their supported contribution is explicit observation-quality interpretation and stable behavior across the two replay domains.
+
+\paperchange{A new ``Complexity-controlled comparison'' table reports parameters, parameter ratio, WAPE, and latency. The component-ablation table reports domain-specific WAPE, changes relative to the full model, and $R^2$. The discussion now gives a role-specific interpretation rather than attributing every gain to communication awareness.}
+
+\subsection*{Comment 4: cross-domain and unseen-condition generalization}
+
+\reviewcomment{Generalization is evaluated with one traffic source and two communication domains. The paper should provide an unseen-setting experiment or quantify sensitivity to unseen communication conditions.}
+
+\authorresponse{We strengthened the quantitative sensitivity analysis without overstating its scope. For the same 74 physical traffic windows, the absolute CICV5G-to-SEE-V2X MAE shift averages 0.20\% over nine horizon--target tasks and never exceeds 0.81\%. Only the 30-s vehicle-count task is significant (CICV5G MAE 1.5860, SEE-V2X MAE 1.5732, relative shift $-0.80$\%, Wilcoxon $p=2.21\times10^{-5}$). CA-DTNet has one significant task of nine, compared with five of nine for Graph GRU.}
+
+Both communication domain identities occur during training, however. The test data contain unseen chronological windows and trace segments, not a third unseen domain. We therefore describe the result as held-out condition sensitivity and do not label it zero-shot generalization. No unsupported new experiment was invented. Geographic transfer and a strictly held-out third radio domain are stated as required future validation.
+
+\paperchange{The matched-domain results now report effect magnitudes, sample count, the exact significant task, and its $p$ value. The abstract, discussion, limitations, and conclusion now delimit the evidence to one city and two known communication domains.}
+
+\section*{Reviewer 2}
+
+\subsection*{Comment 1: dataset choice and generalization limits}
+
+\reviewcomment{Provide clearer justification for pNEUMA, CICV5G, and SEE-V2X and discuss geographic and network generalization.}
+
+\authorresponse{pNEUMA was selected because naturalistic trajectories support one-second, graph-structured road states. CICV5G and SEE-V2X provide complementary cellular and sidelink conditions and contain the latency, loss, load, throughput, and radio-quality variables needed by the replay. Together they support controlled, matched impairment of a fixed traffic process. They do not establish generalization to other cities, road geometries, radio technologies, densities, or propagation environments.}
+
+\paperchange{The dataset subsection now explains the complementary role of each source. The limitations explicitly identify the single-city, single-traffic-source, two-domain boundary and the absence of physical co-registration.}
+
+\subsection*{Comment 2: recent forecasting baselines}
+
+\reviewcomment{Strengthen the comparison with recent Transformer-based or communication-aware approaches.}
+
+\authorresponse{We expanded the related work with PDFormer, STAEformer, STGformer, STGAFormer, and PatchSTG. Their reported results are not inserted as numerical rows because they use different clean fixed-sensor datasets, temporal resolutions, targets, and horizons, and do not accept the same V2X context or clean-state reconstruction target. Comparing published numbers would not be controlled. Instead, the numerical study uses locally evaluated graph-temporal families under the identical replay protocol, adds the capacity-normalized analysis requested by Reviewer 1, and identifies like-for-like Transformer reimplementation as future work.}
+
+\paperchange{The ``Transformer-based spatial--temporal forecasting'' subsection and related-work summary table now cover these recent models. The baseline subsection explains the reason for not mixing incompatible published numbers with the controlled experiment.}
+
+\subsection*{Comment 3: communication replay clarity}
+
+\reviewcomment{Clarify how communication traces are aligned with traffic windows and how this affects realism.}
+
+\authorresponse{This point is addressed together with Reviewer 1, Comment 1. The paper now provides the alignment equation, fixed-seed trace assignment, contiguous offset rule, replay behavior for short traces, packet-loss draw, sample-and-hold update, AoI equation, and the direct-versus-contextual use of communication variables. It also states the realism boundary: measured temporal structure and cross-variable co-variation are preserved, but geographic co-location is not claimed.}
+
+\paperchange{See ``Trace-driven observation process,'' Figure 1, and ``Limitations.''}
+
+\subsection*{Comment 4: 2024--2026 related work}
+
+\reviewcomment{Update the literature, including the suggested C-V2X priority-aware scheduling study, the AoI-aware parameterized DQN study, and the 2024 RSU data-exchange systematic review.}
+
+\authorresponse{All three requested studies are now cited and discussed. The paper explains that the first two optimize resource allocation, while the systematic review organizes RSU data exchange, datasets, metrics, challenges, and opportunities. CA-DTNet addresses the complementary downstream problem of interpreting the received state and forecasting traffic under measured communication conditions. Recent 2024 traffic Transformers are also included.}
+
+\paperchange{The related-work section and bibliography now include the 2025 IEEE Access priority-aware study, the 2026 Internet of Things AoI-aware PDQN study, the 2024 Discover Applied Sciences review, STGAFormer, and PatchSTG.}
+
+\subsection*{Comment 5: explanation of figures and tables}
+
+\reviewcomment{Explain figures and tables more clearly in the text so that the main findings are understandable without repeated visual lookup.}
+
+\authorresponse{We expanded the surrounding text to state the message of each main figure and table. The paper now explains the replay stages in Figure 1, why the trace profiles motivate domain-aware evaluation, which horizon/target cells drive the forecasting findings, why interval coverage must be read with width, why matched significance is paired with effect magnitude, and how capacity and latency should be interpreted together. Captions were also made self-contained where practical.}
+
+\paperchange{The descriptions around Figures 1--7 and the principal performance, ablation, robustness, and efficiency tables were expanded.}
+
+\subsection*{Comment 6: language and formatting}
+
+\reviewcomment{Check grammatical, typographical, and formatting inconsistencies throughout the paper.}
+
+\authorresponse{We proofread the complete source, standardized compound modifiers and dataset names, corrected inconsistent terminology, removed a duplicated/mislabeled ablation table, made table labels unique, improved wide-table formatting, and aligned the mathematical method description with the actual implementation.}
+
+\paperchange{The clean copy contains the corrected text and formatting; the highlighted copy marks the substantive additions and replacements.}
+
+\section*{Additional presentation request: Figure 1}
+
+\reviewcomment{Figure 1 was unclear, unorganized, and contained overlaps.}
+
+\authorresponse{Figure 1 was rebuilt as a vector graphic with four non-overlapping stages: measured inputs, trace replay, CA-DTNet, and model outputs. Arrows now show the exact flow from packet loss to sample-and-hold, latency to AoI, other measurements to context, and the shared latent state to reconstruction and forecasting. The loss weights are shown beside the two objectives.}
+
+\paperchange{The paper uses the new vector Figure 1 and a caption that explains all stages without relying on small internal labels.}
+
+\vfill
+\begin{center}
+\textit{We appreciate the reviewers' guidance, which materially improved the paper's technical transparency, experimental interpretation, and presentation.}
+\end{center}
+
+\end{document}

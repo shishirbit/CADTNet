@@ -60,8 +60,8 @@
 \usepackage{ragged2e}
 \usepackage{microtype}
 \usepackage{url}
-\newenvironment{changed}{}{}
-\newcommand{\change}[1]{#1}
+\newenvironment{changed}{\color{blue}}{}
+\newcommand{\change}[1]{{\color{blue}#1}}
 
 %% as per the requirement new theorem styles can be included as shown below
 \theoremstyle{thmstyleone}%

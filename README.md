@@ -1,8 +1,8 @@
 # CA-DTNet
 
 Official reproducibility package for **CA-DTNet: A Trace-Driven
-Communication-Aware Digital Twin for Robust High-Resolution Traffic
-Forecasting under Heterogeneous V2X Networks**.
+Communication-Aware Digital Twin Network for Robust High-Resolution Traffic
+Forecasting under Heterogeneous V2X Conditions**.
 
 ## Fast verification
 
@@ -29,6 +29,18 @@ rebuilds the three-seed aggregates, and verifies the headline 24/27 result.
 See [REPRODUCIBILITY.md](REPRODUCIBILITY.md) for the full protocol. Raw public
 datasets are downloaded from their official sources and are intentionally not
 duplicated in this repository.
+
+## Peer-review submission files
+
+- `submission/clean/`: publication-ready LaTeX source and figures;
+- `submission/highlighted/`: the same source with substantive changes in blue;
+- `submission/response/`: point-by-point response to both reviewers;
+- `output/`: compiled PDFs and Overleaf-ready ZIP archives.
+
+The clean and highlighted papers are built from the complete uploaded
+52-page submission source. The current compiler produces 54 pages after the
+added technical detail, controlled comparisons, sensitivity analysis, and
+generalization discussion.
 
 ## Citation
 
